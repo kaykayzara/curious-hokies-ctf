@@ -71,46 +71,46 @@ def init_db():
     challenges = [
         # Ethical Hacking
         ("SQLi Gatekeeper",
-         "The mock VT Department Portal login is vulnerable to classic SQL injection. Bypass authentication without knowing the password.<br><br><a href='/challenge/sqli' target='_blank' style='color:#E5751F;font-weight:bold;'>Launch Target Portal →</a>",
-         "Ethical Hacking", 125, "HOKIE{sql_1nj3ct10n_m4st3r}",
-         "Think about how strings close in SQL: ' OR '1'='1"),
+         "The mock VT Department Portal login is vulnerable to classic SQL injection. Bypass authentication without knowing the password to reveal the flag.<br><br><a href='/challenge/sqli' target='_blank' style='color:#E5751F;font-weight:bold;'>Launch Target Portal →</a>",
+         "Ethical Hacking", 125, "HOKIE{sql_injection_master}",
+         "Think about how strings close in SQL: try entering ' OR '1'='1 in the username field."),
         
         ("Free Campus Gear",
          "The campus merchandise checkout page trusts client input. Inspect the page elements, tamper with the hidden form value, and purchase the hoodie for $0!<br><br><a href='/challenge/store' target='_blank' style='color:#E5751F;font-weight:bold;'>Open Campus Store →</a>",
-         "Ethical Hacking", 75, "HOKIE{cl13nt_s1d3_t4mp3r1ng}",
-         "Right-click the Buy button -> Inspect Element. Modify value='50' to value='0'."),
+         "Ethical Hacking", 75, "HOKIE{client_side_tampering}",
+         "Right-click the Buy button -> Inspect Element. Find <input type='hidden' name='price' value='50'> and modify value to '0'."),
 
         ("The Secret Vault",
          "The web server has a crawler exclusion file. What path is restricted from web crawlers?<br><br><a href='/challenge/robots-site' target='_blank' style='color:#E5751F;font-weight:bold;'>Open Challenge Server →</a>",
-         "Ethical Hacking", 100, "HOKIE{r0b0ts_cant_h1d3_fr0m_m3}",
-         "Add /robots.txt to the end of the site URL."),
+         "Ethical Hacking", 100, "HOKIE{robots_cannot_hide}",
+         "Add /robots.txt to the end of the site URL, read the disallowed folder path, and visit that path."),
 
         # Computer Science
         ("AP Loop Trace",
-         "Trace the output of this Python slicing snippet:<br><br><pre style='background:#111;padding:10px;border-left:3px solid #861F41;color:#eee;'>word = 'H1o0k2i4e6C8y!b@e#r$'\nflag = word[::2]\n# format: HOKIE{result}</pre>",
-         "Computer Science", 50, "HOKIE{HokieCyber}",
-         "String slicing [::2] takes every second character starting at index 0."),
+         "Trace the output of this Python slicing snippet:<br><br><pre style='background:#111;padding:10px;border-left:3px solid #861F41;color:#eee;'>word = 'H1o0k2i4e6_8C!y@b#e$r%'\nflag = word[::2]\n# format: HOKIE{result}</pre>",
+         "Computer Science", 50, "HOKIE{hokie_cyber}",
+         "String slicing [::2] takes every second character starting at index 0. The output is 'Hokie_Cyber' (submit as HOKIE{hokie_cyber})."),
 
         ("Logic Gate Circuit",
-         "A security lock evaluates 4 binary values (A, B, C, D where 1=True, 0=False). Determine which inputs activate the lock: <code>(A and not B) and (C or not D)</code>.<br>Submit the 4 digits (e.g., HOKIE{1010}).",
-         "Computer Science", 75, "HOKIE{1010}",
-         "A must be 1, B must be 0, C can be 1, D can be 0."),
+         "A security lock evaluates 4 binary values (A, B, C, D where 1=True, 0=False). When the lock triggers <code>(A and not B) and (C or not D)</code>, the gate unlock code is <strong>logic_gate_active</strong>.<br><br>Submit the flag in standard format: <code>HOKIE{logic_gate_active}</code>",
+         "Computer Science", 75, "HOKIE{logic_gate_active}",
+         "The flag is plain text inside braces: HOKIE{logic_gate_active}."),
 
         # Cybersecurity
         ("Burnt Orange Hex",
          "Decode this hex string to reveal the secret pass:<br><br><code style='background:#111;padding:8px;border-radius:4px;display:block;word-break:break-all;'>484f4b49457b63796265725f686f6b6965735f72756c657d</code><br><br>🔧 Tool: <a href='https://gchq.github.io/CyberChef' target='_blank' style='color:#E5751F;'>Open CyberChef</a> (Recipe: 'From Hex')",
          "Cybersecurity", 50, "HOKIE{cyber_hokies_rule}",
-         "Use 'From Hex' in CyberChef."),
+         "In CyberChef, search for the 'From Hex' recipe and drag it into Recipe."),
 
         ("Caesar at Lane Stadium",
-         "Julius Caesar shifted his messages. Decode this (ROT13):<br><br><code style='background:#111;padding:8px;border-radius:4px;display:block;'>UBXVR{y4ar_f74qvhz_ab1fr}</code><br><br>🔧 Use ROT13 in CyberChef.",
-         "Cybersecurity", 75, "HOKIE{l4ne_s74dium_no1se}",
-         "Apply ROT13 to unscramble the characters."),
+         "Julius Caesar shifted his messages. Decode this (ROT13):<br><br><code style='background:#111;padding:8px;border-radius:4px;display:block;'>UBXVR{ynar_fgnqvhz_abvfr}</code><br><br>🔧 Tool: <a href='https://gchq.github.io/CyberChef' target='_blank' style='color:#E5751F;'>Open CyberChef</a> (Recipe: 'ROT13')",
+         "Cybersecurity", 75, "HOKIE{lane_stadium_noise}",
+         "Use the ROT13 recipe in CyberChef to reverse the 13-character shift."),
 
         ("Inspect Response Headers",
          "Click the ping link and check the HTTP Response Headers in your DevTools Network tab.<br><br><a href='/challenge/header-ping' target='_blank' style='color:#E5751F;font-weight:bold;'>Send Network Ping →</a>",
-         "Cybersecurity", 75, "HOKIE{h77p_h34d3r_sp0tt3d}",
-         "Press F12 -> Network Tab -> Refresh -> Click the request -> Inspect Response Headers.")
+         "Cybersecurity", 75, "HOKIE{http_header_spotted}",
+         "Press F12 -> Network Tab -> Refresh -> Click the request -> Look at 'Response Headers' for X-Hokie-Flag.")
     ]
     c.executemany("""
         INSERT INTO challenges (name, description, category, points, flag, hint)
@@ -347,7 +347,7 @@ def target_sqli():
     if request.method == 'POST':
         uname = request.form.get('username', '')
         if "' or '" in uname.lower() or "' or 1=1" in uname.lower() or "admin'--" in uname.lower():
-            msg = "ACCESS GRANTED! Welcome SuperAdmin. Flag: <strong>HOKIE{sql_1nj3ct10n_m4st3r}</strong>"
+            msg = "ACCESS GRANTED! Welcome SuperAdmin. Flag: <strong>HOKIE{sql_injection_master}</strong>"
         else:
             msg = "Access Denied: Invalid credentials."
     return f'''<!DOCTYPE html>
@@ -381,7 +381,7 @@ def target_store():
     if request.method == 'POST':
         price = request.form.get('price', '50')
         if price == '0':
-            feedback = "<div style='color:#00ff00;margin-top:16px;'>Order Successful for $0! Flag: HOKIE{cl13nt_s1d3_t4mp3r1ng}</div>"
+            feedback = "<div style='color:#00ff00;margin-top:16px;'>Order Successful for $0! Flag: HOKIE{client_side_tampering}</div>"
         else:
             feedback = "<div style='color:#ff4444;margin-top:16px;'>Insufficient funds! You only have $0.00 in your Hokie Wallet.</div>"
     return f'''<!DOCTYPE html>
@@ -426,12 +426,12 @@ def target_robots_file():
 
 @app.route('/restricted-drillfield-vault/')
 def target_drillfield_vault():
-    return "<body style='background:#0d0d0d;color:#E5751F;font-family:monospace;padding:40px;'><h1>Vault Opened</h1><p>Flag: HOKIE{r0b0ts_cant_h1d3_fr0m_m3}</p></body>"
+    return "<body style='background:#0d0d0d;color:#E5751F;font-family:monospace;padding:40px;'><h1>Vault Opened</h1><p>Flag: HOKIE{robots_cannot_hide}</p></body>"
 
 @app.route('/challenge/header-ping')
 def target_header_ping():
     resp = make_response("<body style='background:#0d0d0d;color:#fff;font-family:monospace;padding:40px;'><h2>Ping response received! Check DevTools Network Headers.</h2></body>")
-    resp.headers['X-Hokie-Flag'] = 'HOKIE{h77p_h34d3r_sp0tt3d}'
+    resp.headers['X-Hokie-Flag'] = 'HOKIE{http_header_spotted}'
     return resp
 
 # ── PAGES ────────────────────────────────────────────────────

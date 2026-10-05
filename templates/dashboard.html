@@ -24,6 +24,7 @@
       position: relative;
     }
 
+    /* Crisp white graph overlay on maroon background */
     .grid-bg {
       position: fixed;
       inset: 0;
@@ -93,6 +94,7 @@
     .card-title { font-family:'Orbitron', monospace; font-size:15px; color:#fff; margin-bottom:12px; }
     .card-pts { font-family:'Orbitron', monospace; font-size:18px; color:var(--orange); }
 
+    /* Challenge Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -111,10 +113,12 @@
       width: 100%;
       padding: 30px;
       position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
     }
     .modal-cat { color:var(--stone); font-size:11px; letter-spacing:2px; }
     .modal-title { font-family:'Orbitron', monospace; font-size:20px; color:#fff; margin:6px 0 16px 0; }
-    .modal-desc { font-size:13px; color:#ddd; line-height:1.7; margin-bottom:20px; }
+    .modal-desc { font-size:13px; color:#ddd; line-height:1.7; margin-bottom:16px; }
+    
     .flag-wrap { display:flex; gap:8px; }
     .flag-wrap input {
       flex: 1;
@@ -139,10 +143,12 @@
     .flag-wrap button:hover { background:var(--orange); color:#000; }
     .msg { font-size:13px; margin-top:10px; min-height:18px; }
     .close-btn { position:absolute; top:12px; right:16px; background:none; border:none; color:var(--stone); font-size:20px; cursor:pointer; }
+    .close-btn:hover { color:#fff; }
   </style>
 </head>
 <body>
   <div class="grid-bg"></div>
+
   <nav>
     <div class="nav-logo">HOKIE <span>//</span> STEM</div>
     <div style="display:flex;align-items:center;">
@@ -171,15 +177,30 @@
     <div class="grid" id="challengeGrid"></div>
   </div>
 
+  <!-- Challenge Modal -->
   <div class="modal-overlay" id="chModal">
     <div class="modal">
       <button class="close-btn" onclick="closeModal()">✕</button>
       <div class="modal-cat" id="mCat"></div>
       <div class="modal-title" id="mTitle"></div>
       <div class="modal-desc" id="mDesc"></div>
+
+      <!-- Collapsible Hint Section -->
+      <div style="margin: 14px 0;">
+        <button id="hintToggleBtn" onclick="toggleHint()" style="background:transparent;border:1px dashed var(--orange);color:var(--orange);padding:6px 12px;font-family:'Share Tech Mono', monospace;font-size:12px;cursor:pointer;">
+          💡 Reveal Hint
+        </button>
+        <div id="mHintBox" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(0,0,0,0.55);border-left:3px solid var(--orange);color:#ccc;font-size:12px;line-height:1.6;"></div>
+      </div>
+
+      <!-- Detailed Flag Format Notice -->
+      <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--stone);line-height:1.5;">
+        <strong style="color:var(--orange);">FLAG FORMAT:</strong> All flags start with <code style="color:#fff;">HOKIE{...}</code>. Flags use plain text with multiple words separated by underscores (<code style="color:var(--orange);">_</code>). Example: <code style="color:#00ff66;">HOKIE{sample_flag_here}</code>
+      </div>
+
       <div id="mAction">
         <div class="flag-wrap">
-          <input type="text" id="flagInput" placeholder="HOKIE{your_flag_here}" autocomplete="off">
+          <input type="text" id="flagInput" placeholder="HOKIE{words_separated_by_underscores}" autocomplete="off">
           <button onclick="submitFlag()">SUBMIT</button>
         </div>
         <div class="msg" id="mMsg"></div>
@@ -191,7 +212,9 @@
     let challenges = [];
     let currentCh = null;
     let activeFilter = 'ALL';
+    let hintRevealed = false;
 
+    // Poll the centralized server timer
     async function syncTimer() {
       try {
         const res = await fetch('/api/timer');
@@ -252,11 +275,35 @@
       document.getElementById('mDesc').innerHTML = currentCh.description;
       document.getElementById('mMsg').textContent = '';
       document.getElementById('flagInput').value = '';
+      
+      // Reset hint state
+      hintRevealed = false;
+      const hintBox = document.getElementById('mHintBox');
+      const hintBtn = document.getElementById('hintToggleBtn');
+      hintBox.style.display = 'none';
+      hintBox.innerHTML = currentCh.hint ? `<strong>Hint:</strong> ${currentCh.hint}` : 'No hint needed for this challenge!';
+      hintBtn.textContent = '💡 Reveal Hint';
+
       document.getElementById('chModal').classList.add('active');
       setTimeout(() => document.getElementById('flagInput').focus(), 50);
     }
 
-    function closeModal() { document.getElementById('chModal').classList.remove('active'); }
+    function toggleHint() {
+      const hintBox = document.getElementById('mHintBox');
+      const hintBtn = document.getElementById('hintToggleBtn');
+      hintRevealed = !hintRevealed;
+      if (hintRevealed) {
+        hintBox.style.display = 'block';
+        hintBtn.textContent = '🙈 Hide Hint';
+      } else {
+        hintBox.style.display = 'none';
+        hintBtn.textContent = '💡 Reveal Hint';
+      }
+    }
+
+    function closeModal() { 
+      document.getElementById('chModal').classList.remove('active'); 
+    }
 
     async function submitFlag() {
       const flag = document.getElementById('flagInput').value.trim();
