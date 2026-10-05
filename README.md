@@ -2,6 +2,7 @@
 
 An interactive, browser-accessible Capture The Flag (CTF) competition engine developed for the **Virginia Tech K-12 STEM Initiative** workshop. Tailored for Virginia 10th–12th grade AP Computer Science and Cybersecurity students.
 
+**🌐 Live Platform:** https://curious-hokies-ctf.onrender.com/
 Designed and developed by **Kayrene Woods** (@kaykayzara).
 
 ---
