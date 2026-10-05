@@ -1,0 +1,12 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Local databases (Render will create a fresh one on launch)
+ctf.db
+
+# macOS artifacts
+.DS_Store

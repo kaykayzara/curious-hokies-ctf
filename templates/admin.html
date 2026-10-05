@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CTF Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --maroon-dark: #120307;
+      --maroon-base: #2B0610;
+      --maroon: #861F41;
+      --orange: #E5751F;
+      --stone: #8E9094;
+      --white: #F4F4F6;
+      --card-bg: rgba(22, 6, 12, 0.95);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: radial-gradient(circle at 50% 30%, var(--maroon-base) 0%, var(--maroon-dark) 100%);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      padding: 24px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 10;
+    }
+    h1 { font-family:'Orbitron', monospace; font-size:18px; color:var(--orange); }
+    
+    .box {
+      background: var(--card-bg);
+      border: 1px solid var(--orange);
+      padding: 28px;
+      max-width: 420px;
+      margin: 80px auto;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    input {
+      width: 90%;
+      padding: 12px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid #444;
+      color: #fff;
+      font-family: inherit;
+      margin: 12px 0;
+      outline: none;
+    }
+    input:focus { border-color:var(--orange); }
+    button {
+      background: var(--maroon);
+      border: none;
+      padding: 11px 24px;
+      color: #fff;
+      font-family: 'Orbitron', monospace;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.15s;
+    }
+    button:hover { background:var(--orange); color:#000; }
+    
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    th, td { text-align:left; padding:12px; border-bottom:1px solid rgba(255,255,255,0.08); font-size:12px; }
+    th { color:var(--stone); }
+    #adminPanel { position:relative; z-index:10; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div id="loginSection" class="box">
+    <h1>ADMIN AUTH</h1>
+    <input type="password" id="adminPass" placeholder="Admin password" autocomplete="off">
+    <button onclick="authAdmin()">ENTER</button>
+  </div>
+
+  <div id="adminPanel" style="display:none;max-width:1000px;margin:0 auto;">
+    <nav>
+      <h1>// CTF ADMIN DASHBOARD</h1>
+      <button onclick="resetScores()" style="background:#ff3333;font-size:11px;">RESET SCORES</button>
+    </nav>
+
+    <!-- Global Timer Controls -->
+    <div style="background:rgba(134,31,65,0.25);border:1px solid var(--maroon);padding:18px 24px;margin:20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <span style="font-size:11px;color:var(--stone);letter-spacing:2px;">GLOBAL 30-MIN COMPETITION TIMER:</span>
+        <span id="adminTimerPreview" style="font-family:'Orbitron',monospace;font-size:20px;color:var(--orange);margin-left:14px;font-weight:bold;">--:--</span>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="controlTimer('start')" style="background:#00c400;color:#000;padding:8px 16px;font-size:11px;">START CTF</button>
+        <button onclick="controlTimer('pause')" style="background:var(--orange);color:#000;padding:8px 16px;font-size:11px;">PAUSE</button>
+        <button onclick="controlTimer('reset')" style="background:#333;color:#fff;padding:8px 16px;font-size:11px;">RESET</button>
+      </div>
+    </div>
+
+    <h3 style="color:var(--orange);margin-top:24px;">Recent Submissions</h3>
+    <table>
+      <thead><tr><th>Time</th><th>User</th><th>Challenge</th><th>Submitted Flag</th><th>Result</th></tr></thead>
+      <tbody id="subBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function authAdmin() {
+      const p = document.getElementById('adminPass').value;
+      const res = await fetch('/api/admin/login', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({password:p})
+      });
+      const d = await res.json();
+      if(d.success) {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        loadLogs();
+        updateAdminTimer();
+      } else alert('Invalid password');
+    }
+
+    // Submit with Enter key in password field
+    document.getElementById('adminPass').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') authAdmin();
+    });
+
+    async function controlTimer(action) {
+      await fetch('/api/admin/timer', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ action })
+      });
+      updateAdminTimer();
+    }
+
+    async function updateAdminTimer() {
+      const res = await fetch('/api/timer');
+      const d = await res.json();
+      const el = document.getElementById('adminTimerPreview');
+      if (d.status === 'waiting') el.textContent = 'NOT STARTED';
+      else if (d.status === 'ended') el.textContent = 'ENDED';
+      else {
+        const m = Math.floor(d.remaining / 60);
+        const s = d.remaining % 60;
+        el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      }
+    }
+    setInterval(updateAdminTimer, 1000);
+
+    async function loadLogs() {
+      const res = await fetch('/api/admin/submissions');
+      const data = await res.json();
+      document.getElementById('subBody').innerHTML = data.map(s => `
+        <tr>
+          <td style="color:#777">${s.submitted_at}</td>
+          <td><strong>${s.username}</strong></td>
+          <td>${s.challenge}</td>
+          <td style="color:#aaa">${s.flag}</td>
+          <td style="color:${s.correct ? '#00ff66' : '#ff4444'}">${s.correct ? 'SOLVED' : 'WRONG'}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function resetScores() {
+      if(!confirm("Reset all player scores and submissions?")) return;
+      await fetch('/api/admin/reset', {method:'POST'});
+      alert('CTF scores cleared!');
+      loadLogs();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Curious Hokies STEM — Challenge Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --maroon-dark: #120307;
+      --maroon-base: #2B0610;
+      --maroon: #861F41;
+      --orange: #E5751F;
+      --stone: #8E9094;
+      --card-bg: rgba(22, 6, 12, 0.95);
+      --white: #F4F4F6;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: radial-gradient(circle at 50% 30%, var(--maroon-base) 0%, var(--maroon-dark) 100%);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 36px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(18, 3, 7, 0.9);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .nav-logo { font-family:'Orbitron', monospace; color:var(--orange); font-size:16px; font-weight:900; }
+    .nav-logo span { color:var(--maroon); }
+    .nav-links a { color:var(--stone); text-decoration:none; margin-right:16px; font-size:12px; }
+    .nav-links a.active { color:#fff; }
+    .nav-score { color:var(--orange); font-size:13px; font-family:'Orbitron', monospace; margin-right:16px; }
+
+    .main { max-width:1200px; margin:0 auto; padding:28px 20px; position:relative; z-index:10; }
+    
+    .timer-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(134, 31, 65, 0.25);
+      border: 1px solid var(--maroon);
+      padding: 14px 24px;
+      margin-bottom: 24px;
+      font-family: 'Orbitron', monospace;
+    }
+    .timer-text { color:var(--orange); font-size:18px; font-weight:700; }
+
+    .filters { display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--stone);
+      padding: 6px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .filter-btn.active { border-color:var(--orange); color:var(--orange); background:rgba(229,117,31,0.1); }
+
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 4px solid var(--maroon);
+      padding: 18px;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .card:hover { transform:translateY(-2px); border-color:rgba(255,255,255,0.25); border-left-color:var(--orange); }
+    .card.solved { border-left-color:#00ff66; opacity:0.85; }
+    .card-cat { color:var(--stone); font-size:10px; letter-spacing:1px; margin-bottom:6px; }
+    .card-title { font-family:'Orbitron', monospace; font-size:15px; color:#fff; margin-bottom:12px; }
+    .card-pts { font-family:'Orbitron', monospace; font-size:18px; color:var(--orange); }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display:flex; }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--orange);
+      max-width: 600px;
+      width: 100%;
+      padding: 30px;
+      position: relative;
+    }
+    .modal-cat { color:var(--stone); font-size:11px; letter-spacing:2px; }
+    .modal-title { font-family:'Orbitron', monospace; font-size:20px; color:#fff; margin:6px 0 16px 0; }
+    .modal-desc { font-size:13px; color:#ddd; line-height:1.7; margin-bottom:20px; }
+    .flag-wrap { display:flex; gap:8px; }
+    .flag-wrap input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #444;
+      color: #fff;
+      padding: 10px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      outline: none;
+    }
+    .flag-wrap input:focus { border-color:var(--orange); }
+    .flag-wrap button {
+      background: var(--maroon);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .flag-wrap button:hover { background:var(--orange); color:#000; }
+    .msg { font-size:13px; margin-top:10px; min-height:18px; }
+    .close-btn { position:absolute; top:12px; right:16px; background:none; border:none; color:var(--stone); font-size:20px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <nav>
+    <div class="nav-logo">HOKIE <span>//</span> STEM</div>
+    <div style="display:flex;align-items:center;">
+      <div class="nav-links">
+        <a class="active">CHALLENGES</a>
+        <a href="/leaderboard">LEADERBOARD</a>
+      </div>
+      <div class="nav-score">PTS: <span id="myScore">0</span></div>
+      <button onclick="logout()" style="background:none;border:1px solid #444;color:var(--stone);padding:4px 10px;font-family:inherit;font-size:11px;cursor:pointer;">LOGOUT</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="timer-banner">
+      <div>SESSION REMAINING:</div>
+      <div class="timer-text" id="timeRemaining">WAITING FOR START</div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('ALL')">ALL</button>
+      <button class="filter-btn" onclick="setFilter('Ethical Hacking')">ETHICAL HACKING</button>
+      <button class="filter-btn" onclick="setFilter('Computer Science')">COMPUTER SCIENCE</button>
+      <button class="filter-btn" onclick="setFilter('Cybersecurity')">CYBERSECURITY</button>
+    </div>
+
+    <div class="grid" id="challengeGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="chModal">
+    <div class="modal">
+      <button class="close-btn" onclick="closeModal()">✕</button>
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-desc" id="mDesc"></div>
+      <div id="mAction">
+        <div class="flag-wrap">
+          <input type="text" id="flagInput" placeholder="HOKIE{your_flag_here}" autocomplete="off">
+          <button onclick="submitFlag()">SUBMIT</button>
+        </div>
+        <div class="msg" id="mMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let challenges = [];
+    let currentCh = null;
+    let activeFilter = 'ALL';
+
+    async function syncTimer() {
+      try {
+        const res = await fetch('/api/timer');
+        const data = await res.json();
+        const banner = document.getElementById('timeRemaining');
+        
+        if (data.status === 'waiting') {
+          banner.textContent = 'WAITING FOR START';
+          banner.style.color = '#8E9094';
+        } else if (data.status === 'ended') {
+          banner.textContent = 'TIME EXPIRED';
+          banner.style.color = '#FF4D4D';
+        } else {
+          const mins = Math.floor(data.remaining / 60);
+          const secs = data.remaining % 60;
+          banner.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+          banner.style.color = 'var(--orange)';
+        }
+      } catch(e) {}
+    }
+    syncTimer();
+    setInterval(syncTimer, 1000);
+
+    async function loadData() {
+      const [meRes, chRes] = await Promise.all([fetch('/api/me'), fetch('/api/challenges')]);
+      if (meRes.status === 401) return window.location.href='/';
+      const me = await meRes.json();
+      challenges = await chRes.json();
+      document.getElementById('myScore').textContent = me.score;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('challengeGrid');
+      const filtered = activeFilter === 'ALL' ? challenges : challenges.filter(c => c.category === activeFilter);
+      grid.innerHTML = filtered.map(c => `
+        <div class="card ${c.solved ? 'solved' : ''}" onclick="openCh(${c.id})">
+          <div class="card-cat">${c.category.toUpperCase()}</div>
+          <div class="card-title">${c.name}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="card-pts">${c.points} <span style="font-size:10px;color:var(--stone)">PTS</span></div>
+            <div style="font-size:11px;color:${c.solved?'#00ff66':'var(--stone)'}">${c.solved ? '✓ SOLVED' : c.solves + ' solves'}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setFilter(cat) {
+      activeFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.textContent === cat.toUpperCase() || (cat==='ALL' && b.textContent==='ALL')));
+      renderGrid();
+    }
+
+    function openCh(id) {
+      currentCh = challenges.find(c => c.id === id);
+      document.getElementById('mCat').textContent = currentCh.category.toUpperCase();
+      document.getElementById('mTitle').textContent = `${currentCh.name} (${currentCh.points} pts)`;
+      document.getElementById('mDesc').innerHTML = currentCh.description;
+      document.getElementById('mMsg').textContent = '';
+      document.getElementById('flagInput').value = '';
+      document.getElementById('chModal').classList.add('active');
+      setTimeout(() => document.getElementById('flagInput').focus(), 50);
+    }
+
+    function closeModal() { document.getElementById('chModal').classList.remove('active'); }
+
+    async function submitFlag() {
+      const flag = document.getElementById('flagInput').value.trim();
+      const msg = document.getElementById('mMsg');
+      if(!flag) return;
+      const res = await fetch('/api/submit', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({challenge_id: currentCh.id, flag})
+      });
+      const data = await res.json();
+      if(data.success) {
+        msg.style.color = '#00ff66';
+        msg.textContent = data.message;
+        setTimeout(() => { closeModal(); loadData(); }, 1200);
+      } else {
+        msg.style.color = '#FF4D4D';
+        msg.textContent = data.message || data.error;
+      }
+    }
+
+    // Submit with Enter key or Close with Escape
+    document.getElementById('flagInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submitFlag();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    async function logout() {
+      await fetch('/api/logout', {method:'POST'});
+      window.location.href='/';
+    }
+
+    loadData();
+    setInterval(loadData, 15000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curious Hokies STEM CTF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --maroon-dark: #120307;
+      --maroon-base: #2B0610;
+      --maroon-accent: #861F41;
+      --orange: #E5751F;
+      --white: #F4F4F6;
+      --stone: #8E9094;
+      --card-bg: rgba(22, 6, 12, 0.95);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: radial-gradient(circle at 50% 30%, var(--maroon-base) 0%, var(--maroon-dark) 100%);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(18, 3, 7, 0.9);
+      position: relative;
+      z-index: 10;
+    }
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--orange);
+      letter-spacing: 2px;
+    }
+    .nav-logo span { color: var(--maroon-accent); }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 85vh;
+      text-align: center;
+      padding: 30px 20px 80px 20px;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .badge {
+      background: rgba(134, 31, 65, 0.35);
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      padding: 6px 18px;
+      font-size: 12px;
+      letter-spacing: 2.5px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(38px, 8vw, 84px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: 1px;
+    }
+    .hero-title .maroon { color: #D13867; }
+    .hero-title .orange { color: var(--orange); }
+    .hero-subhead {
+      font-size: 13px;
+      letter-spacing: 6px;
+      color: var(--stone);
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      color: var(--stone);
+      font-size: 14px;
+      max-width: 580px;
+      margin: 18px 0 16px 0;
+      line-height: 1.7;
+      letter-spacing: 0.5px;
+    }
+
+    .typewriter-wrap {
+      margin-bottom: 28px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .typewriter {
+      color: #00FF66;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 102, 0.25);
+    }
+    .typewriter::after {
+      content: '█';
+      animation: blink 1s infinite;
+      color: #00FF66;
+      margin-left: 3px;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .btn-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      padding: 13px 34px;
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--maroon-accent);
+      color: #FFF;
+      box-shadow: 0 4px 14px rgba(134, 31, 65, 0.4);
+    }
+    .btn-primary:hover { background: #A3264F; transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--orange);
+      color: var(--orange);
+    }
+    .btn-secondary:hover { background: var(--orange); color: #000; }
+
+    .stats {
+      display: flex;
+      gap: 50px;
+      margin-top: 50px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 30px;
+      color: var(--orange);
+      font-weight: 700;
+    }
+    .stat-lbl {
+      color: var(--stone);
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 4px;
+    }
+
+    .footer-org {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 10px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      text-transform: uppercase;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--orange);
+      max-width: 420px;
+      width: 100%;
+      padding: 34px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+    .modal h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      color: var(--orange);
+      margin-bottom: 20px;
+    }
+    .modal input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #444;
+      color: #fff;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 12px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .modal input:focus { border-color: var(--orange); }
+    .modal-err { color: #FF4D4D; font-size: 12px; margin-bottom: 12px; min-height: 16px; }
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--stone);
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .close-btn:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <nav>
+    <div class="nav-logo">HOKIE <span>//</span> STEM</div>
+    <div style="display:flex;gap:12px;">
+      <button class="btn btn-secondary" style="padding:6px 16px;font-size:10px;" onclick="openModal('login')">LOGIN</button>
+      <button class="btn btn-primary" style="padding:6px 16px;font-size:10px;" onclick="openModal('register')">REGISTER</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="badge">> CURIOUS HOKIES STEM</div>
+    <h1 class="hero-title">
+      <span class="maroon">HOKIE</span> <span class="orange">CTF</span>
+    </h1>
+    <div class="hero-subhead">Capture The Flag</div>
+    <p class="hero-sub">
+      Virginia AP Computer Science & Cybersecurity Challenge.<br>
+      Test your skills across Ethical Hacking, Algorithms, and Defense in ~30 minutes.
+    </p>
+
+    <div class="typewriter-wrap">
+      <span class="typewriter" id="typewriter"></span>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="openModal('register')">REGISTER NOW</button>
+      <button class="btn btn-secondary" onclick="openModal('login')">SIGN IN</button>
+    </div>
+
+    <div class="stats">
+      <div><div class="stat-num">8</div><div class="stat-lbl">CHALLENGES</div></div>
+      <div><div class="stat-num">3</div><div class="stat-lbl">CATEGORIES</div></div>
+      <div><div class="stat-num">30</div><div class="stat-lbl">MINUTES</div></div>
+      <div><div class="stat-num">650</div><div class="stat-lbl">TOTAL POINTS</div></div>
+      <div><div class="stat-num">OCT 14</div><div class="stat-lbl">EVENT DATE</div></div>
+    </div>
+  </div>
+
+  <div class="footer-org">
+    Virginia Polytechnic Institute and State University // K-12 STEM Initiative
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal">
+      <button class="close-btn" onclick="closeModal()">✕</button>
+      <h2 id="modalTitle">// ACCESS PORTAL</h2>
+      <input type="text" id="uname" placeholder="Username" autocomplete="off">
+      <input type="password" id="pword" placeholder="Password">
+      <div class="modal-err" id="errBox"></div>
+      <button class="btn btn-primary" style="width:100%" id="actionBtn" onclick="handleAuth()">ENTER</button>
+      <p style="color:var(--stone);font-size:11px;margin-top:14px;text-align:center;">
+        <span id="switchTxt">Need an account?</span> 
+        <a style="color:var(--orange);cursor:pointer;" onclick="toggleAuthMode()" id="switchLink">Register</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const phrases = [
+      'cat /flags/secret.txt',
+      'nmap -sV drillfield.vt.edu',
+      'strings challenge.bin | grep HOKIE{',
+      'exiftool pylon_monument.jpg',
+      'python3 -c "print(\'HOKIE\' in [True])"',
+      'curl -I https://hokie.ctf/ping'
+    ];
+    let pi = 0, ci = 0, deleting = false;
+    const tw = document.getElementById('typewriter');
+    function type() {
+      const phrase = phrases[pi];
+      if (!deleting) {
+        tw.textContent = phrase.substring(0, ci++);
+        if (ci > phrase.length) { deleting = true; setTimeout(type, 1600); return; }
+      } else {
+        tw.textContent = phrase.substring(0, ci--);
+        if (ci < 0) { deleting = false; pi = (pi + 1) % phrases.length; ci = 0; }
+      }
+      setTimeout(type, deleting ? 35 : 75);
+    }
+    type();
+
+    let mode = 'login';
+    function openModal(targetMode) {
+      mode = targetMode;
+      document.getElementById('modalTitle').textContent = mode === 'login' ? '// SIGN IN' : '// REGISTER ACCOUNT';
+      document.getElementById('actionBtn').textContent = mode === 'login' ? 'ACCESS SYSTEM' : 'CREATE ACCOUNT';
+      document.getElementById('switchTxt').textContent = mode === 'login' ? "Need an account?" : "Already registered?";
+      document.getElementById('switchLink').textContent = mode === 'login' ? "Register" : "Sign In";
+      document.getElementById('errBox').textContent = '';
+      document.getElementById('authModal').classList.add('active');
+      setTimeout(() => document.getElementById('uname').focus(), 50);
+    }
+    function closeModal() { document.getElementById('authModal').classList.remove('active'); }
+    function toggleAuthMode() { openModal(mode === 'login' ? 'register' : 'login'); }
+
+    async function handleAuth() {
+      const username = document.getElementById('uname').value.trim();
+      const password = document.getElementById('pword').value;
+      const err = document.getElementById('errBox');
+      err.textContent = '';
+      try {
+        const endpoint = mode === 'login' ? '/api/login' : '/api/register';
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({username, password})
+        });
+        const d = await res.json();
+        if (d.success) window.location.href = '/dashboard';
+        else err.textContent = d.error || 'Authentication error';
+      } catch(e) { err.textContent = 'Server connection error'; }
+    }
+
+    // Keydown listener for Enter key inside input fields
+    document.getElementById('uname').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleAuth();
+    });
+    document.getElementById('pword').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleAuth();
+    });
+
+    fetch('/api/me').then(r=>r.json()).then(d=>{ if(d.username) window.location.href='/dashboard'; });
+  </script>
+</body>
+</html>

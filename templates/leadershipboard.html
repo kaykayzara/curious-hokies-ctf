@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Curious Hokies STEM — Leaderboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --maroon-dark: #120307;
+      --maroon-base: #2B0610;
+      --maroon: #861F41;
+      --orange: #E5751F;
+      --stone: #8E9094;
+      --white: #F4F4F6;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: radial-gradient(circle at 50% 30%, var(--maroon-base) 0%, var(--maroon-dark) 100%);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 36px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(18, 3, 7, 0.9);
+      position: relative;
+      z-index: 10;
+    }
+    .nav-logo { font-family:'Orbitron', monospace; color:var(--orange); font-size:16px; font-weight:900; }
+    .nav-logo span { color:var(--maroon); }
+    .main { max-width:850px; margin:0 auto; padding:36px 20px; position:relative; z-index:10; }
+    h1 { font-family:'Orbitron', monospace; font-size:22px; color:#fff; }
+    table { width:100%; border-collapse:collapse; margin-top:24px; }
+    th { text-align:left; padding:10px 14px; font-size:11px; color:var(--stone); border-bottom:1px solid rgba(255,255,255,0.1); }
+    td { padding:14px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.06); }
+    .rank-1 { color:#FFD700; font-weight:bold; }
+    .rank-2 { color:#C0C0C0; font-weight:bold; }
+    .rank-3 { color:#CD7F32; font-weight:bold; }
+    .score { font-family:'Orbitron', monospace; color:var(--orange); font-size:15px; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <nav>
+    <div class="nav-logo">HOKIE <span>//</span> STEM</div>
+    <div><a href="/dashboard" style="color:var(--stone);text-decoration:none;font-size:12px;">← BACK TO CHALLENGES</a></div>
+  </nav>
+
+  <div class="main">
+    <h1>// LIVE SCOREBOARD</h1>
+    <p style="color:var(--stone);font-size:12px;margin-top:4px;">Scores refresh automatically every 15 seconds</p>
+    <table>
+      <thead><tr><th>RANK</th><th>PLAYER</th><th>SCORE</th><th>SOLVES</th></tr></thead>
+      <tbody id="lbRows"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function updateLB() {
+      const res = await fetch('/api/leaderboard');
+      const data = await res.json();
+      document.getElementById('lbRows').innerHTML = data.map((u, i) => `
+        <tr>
+          <td class="rank-${i+1}">#${u.rank}</td>
+          <td><strong>${u.username}</strong></td>
+          <td class="score">${u.score}</td>
+          <td style="color:var(--stone)">${u.solves}</td>
+        </tr>
+      `).join('');
+    }
+    updateLB();
+    setInterval(updateLB, 15000);
+  </script>
+</body>
+</html>
