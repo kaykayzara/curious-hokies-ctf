@@ -131,10 +131,7 @@
       });
       const d = await res.json();
       if(d.success) {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        loadLogs();
-        updateAdminTimer();
+        showDashboard();
       } else alert('Invalid password');
     }
 
@@ -142,6 +139,16 @@
     document.getElementById('adminPass').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') authAdmin();
     });
+
+    function showDashboard() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      loadLogs();
+      updateAdminTimer();
+      // Auto-refresh submissions every 3 seconds so you never have to reload
+      setInterval(loadLogs, 3000);
+      setInterval(updateAdminTimer, 1000);
+    }
 
     async function controlTimer(action) {
       await fetch('/api/admin/timer', {
@@ -164,20 +171,22 @@
         el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
       }
     }
-    setInterval(updateAdminTimer, 1000);
 
     async function loadLogs() {
-      const res = await fetch('/api/admin/submissions');
-      const data = await res.json();
-      document.getElementById('subBody').innerHTML = data.map(s => `
-        <tr>
-          <td style="color:#777">${s.submitted_at}</td>
-          <td><strong>${s.username}</strong></td>
-          <td>${s.challenge}</td>
-          <td style="color:#aaa">${s.flag}</td>
-          <td style="color:${s.correct ? '#00ff66' : '#ff4444'}">${s.correct ? 'SOLVED' : 'WRONG'}</td>
-        </tr>
-      `).join('');
+      try {
+        const res = await fetch('/api/admin/submissions');
+        if (res.status === 401) return; // Not authorized
+        const data = await res.json();
+        document.getElementById('subBody').innerHTML = data.map(s => `
+          <tr>
+            <td style="color:#777">${s.submitted_at}</td>
+            <td><strong>${s.username}</strong></td>
+            <td>${s.challenge}</td>
+            <td style="color:#aaa">${s.flag}</td>
+            <td style="color:${s.correct ? '#00ff66' : '#ff4444'}">${s.correct ? 'SOLVED' : 'WRONG'}</td>
+          </tr>
+        `).join('');
+      } catch(e) {}
     }
 
     async function resetScores() {
@@ -186,6 +195,13 @@
       alert('CTF scores cleared!');
       loadLogs();
     }
+
+    // Auto-check if admin is already authenticated so page refreshes don't log you out
+    fetch('/api/admin/submissions')
+      .then(r => {
+        if (r.ok) showDashboard();
+      })
+      .catch(() => {});
   </script>
 </body>
 </html>
