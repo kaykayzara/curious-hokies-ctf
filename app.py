@@ -360,33 +360,81 @@ def admin_reset():
 @app.route('/challenge/sqli', methods=['GET', 'POST'])
 def target_sqli():
     msg = ""
+    success = False
     if request.method == 'POST':
         uname = request.form.get('username', '')
         if "' or '" in uname.lower() or "' or 1=1" in uname.lower() or "admin'--" in uname.lower():
-            msg = "ACCESS GRANTED! Welcome SuperAdmin. Flag: <strong>HOKIE{sql_injection_master}</strong>"
+            success = True
+            msg = "AUTHENTICATION BYPASS DETECTED<br>Welcome, Root Administrator.<br><br>FLAG: <span style='color:#00ff66;font-size:16px;'>HOKIE{sql_injection_master}</span>"
         else:
-            msg = "Access Denied: Invalid credentials."
+            msg = "ACCESS DENIED // Invalid credentials or database query rejected."
+            
     return f'''<!DOCTYPE html>
 <html>
-<head><title>VT Admin Portal</title>
-<style>
-  body{{background:#0d0d0d;color:#fff;font-family:monospace;padding:40px;text-align:center;}}
-  .box{{max-width:400px;margin:50px auto;border:2px solid #861F41;padding:24px;background:#151515;border-radius:6px;}}
-  input{{width:90%;padding:10px;margin:8px 0;background:#222;border:1px solid #444;color:#fff;}}
-  button{{background:#861F41;color:#fff;border:none;padding:10px 20px;cursor:pointer;font-weight:bold;margin-top:10px;}}
-  button:hover{{background:#E5751F;}}
-</style>
+<head>
+  <title>VT Central Authentication Service</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {{ box-sizing:border-box; margin:0; padding:0; }}
+    body {{
+      background: radial-gradient(circle at 50% 30%, #20040B 0%, #0A0103 100%);
+      color: #eee; font-family:'Share Tech Mono', monospace; min-height:100vh;
+      display:flex; align-items:center; justify-content:center; padding:20px;
+    }}
+    .panel {{
+      width:100%; max-width:440px; background:rgba(20,4,10,0.95);
+      border:1px solid #861F41; box-shadow:0 0 35px rgba(134,31,65,0.4);
+      border-radius:4px; overflow:hidden;
+    }}
+    .panel-hdr {{
+      background:#861F41; padding:12px 18px; display:flex; justify-content:space-between; align-items:center;
+    }}
+    .panel-hdr h3 {{ font-family:'Orbitron', monospace; font-size:13px; color:#fff; letter-spacing:1px; }}
+    .status-dot {{ width:8px; height:8px; background:#00ff66; border-radius:50%; box-shadow:0 0 8px #00ff66; }}
+    .panel-body {{ padding:28px 24px; }}
+    .tagline {{ color:#E5751F; font-size:12px; margin-bottom:16px; text-transform:uppercase; letter-spacing:1.5px; }}
+    .form-group {{ margin-bottom:14px; text-align:left; }}
+    label {{ display:block; font-size:11px; color:#aaa; margin-bottom:6px; letter-spacing:1px; }}
+    input {{
+      width:100%; padding:11px 14px; background:#0e0205; border:1px solid #441120;
+      color:#fff; font-family:'Share Tech Mono', monospace; font-size:14px; outline:none;
+    }}
+    input:focus {{ border-color:#E5751F; box-shadow:0 0 8px rgba(229,117,31,0.3); }}
+    button {{
+      width:100%; background:#E5751F; color:#000; font-family:'Orbitron', monospace;
+      font-size:12px; font-weight:bold; padding:12px; border:none; cursor:pointer;
+      letter-spacing:1px; margin-top:8px; transition:0.2s;
+    }}
+    button:hover {{ background:#ff8c37; box-shadow:0 0 14px rgba(229,117,31,0.5); }}
+    .result-box {{
+      margin-top:18px; padding:12px; font-size:12px; line-height:1.5;
+      background: {'rgba(0,255,102,0.08)' if success else 'rgba(255,68,68,0.08)'};
+      border-left: 3px solid {'#00ff66' if success else '#ff4444'};
+      color: {'#00ff66' if success else '#ff6666'};
+    }}
+  </style>
 </head>
 <body>
-  <div class="box">
-    <h2 style="color:#E5751F;">Virginia Tech Portal</h2>
-    <p style="color:#aaa;font-size:12px;">Authorized Hokies Only</p>
-    <form method="POST">
-      <input type="text" name="username" placeholder="Username / PID" required><br>
-      <input type="password" name="password" placeholder="Password"><br>
-      <button type="submit">LOGIN</button>
-    </form>
-    <p style="margin-top:16px;color:#E5751F;">{msg}</p>
+  <div class="panel">
+    <div class="panel-hdr">
+      <h3>VT AUTH // GATEWAY-01</h3>
+      <div class="status-dot"></div>
+    </div>
+    <div class="panel-body">
+      <div class="tagline">Restricted Department Portal</div>
+      <form method="POST">
+        <div class="form-group">
+          <label>CAMPUS PID / USERNAME</label>
+          <input type="text" name="username" placeholder="e.g. hokie_admin" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>ACCESS KEY / PASSWORD</label>
+          <input type="password" name="password" placeholder="••••••••••••">
+        </div>
+        <button type="submit">AUTHORIZE SESSION</button>
+      </form>
+      {'<div class="result-box">' + msg + '</div>' if msg else ''}
+    </div>
   </div>
 </body>
 </html>'''
@@ -394,32 +442,75 @@ def target_sqli():
 @app.route('/challenge/store', methods=['GET', 'POST'])
 def target_store():
     feedback = ""
+    is_success = False
     if request.method == 'POST':
         price = request.form.get('price', '50')
         if price == '0':
-            feedback = "<div style='color:#00ff00;margin-top:16px;'>Order Successful for $0! Flag: HOKIE{client_side_tampering}</div>"
+            is_success = True
+            feedback = "TRANSACTION APPROVED ($0.00)<br>Order dispatched! Flag: <strong style='color:#00ff66;'>HOKIE{client_side_tampering}</strong>"
         else:
-            feedback = "<div style='color:#ff4444;margin-top:16px;'>Insufficient funds! You only have $0.00 in your Hokie Wallet.</div>"
+            feedback = f"TRANSACTION REJECTED: Insufficient balance. Your Hokie Wallet has $0.00, but checkout total is ${price}.00."
+
     return f'''<!DOCTYPE html>
 <html>
-<head><title>Hokie Merch Store</title>
-<style>
-  body{{background:#0d0d0d;color:#fff;font-family:monospace;padding:40px;text-align:center;}}
-  .card{{background:#1a1a1a;border:1px solid #861F41;padding:20px;max-width:350px;margin:20px auto;border-radius:8px;}}
-  button{{background:#E5751F;border:none;padding:10px 20px;color:#fff;font-weight:bold;cursor:pointer;}}
-</style>
+<head>
+  <title>VT Campus Gear Vault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {{ box-sizing:border-box; margin:0; padding:0; }}
+    body {{
+      background: radial-gradient(circle at 50% 30%, #1c050c 0%, #080104 100%);
+      color: #eee; font-family:'Share Tech Mono', monospace; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+    }}
+    .store-card {{
+      max-width:380px; width:100%; background:rgba(20,5,11,0.95);
+      border:1px solid #861F41; border-radius:6px; box-shadow:0 0 30px rgba(134,31,65,0.3);
+      overflow:hidden; text-align:center;
+    }}
+    .badge {{ background:#861F41; color:#fff; font-size:11px; padding:6px; letter-spacing:1px; }}
+    .card-content {{ padding:24px; }}
+    .item-icon {{ font-size:48px; margin-bottom:10px; }}
+    h2 {{ font-family:'Orbitron', monospace; font-size:18px; color:#fff; margin-bottom:8px; }}
+    .price-tag {{ font-size:24px; color:#E5751F; font-weight:bold; margin-bottom:12px; }}
+    .wallet-box {{
+      background:rgba(0,0,0,0.5); padding:10px; border:1px dashed #555;
+      font-size:12px; color:#aaa; margin-bottom:18px;
+    }}
+    button {{
+      width:100%; background:#E5751F; color:#000; font-family:'Orbitron', monospace;
+      font-size:12px; font-weight:bold; padding:12px; border:none; cursor:pointer;
+      transition:0.2s;
+    }}
+    button:hover {{ background:#ff8c37; box-shadow:0 0 12px rgba(229,117,31,0.4); }}
+    .alert {{
+      margin-top:16px; padding:12px; font-size:12px; line-height:1.5;
+      background: {'rgba(0,255,102,0.1)' if is_success else 'rgba(255,68,68,0.1)'};
+      border-left: 3px solid {'#00ff66' if is_success else '#ff4444'};
+      color: {'#00ff66' if is_success else '#ff7777'};
+    }}
+  </style>
 </head>
 <body>
-  <h1>Virginia Tech Cybersecurity Merch</h1>
-  <div class="card">
-    <h3>VT Cyber Maroon Hoodie</h3>
-    <p style="color:#E5751F;font-size:18px;">Price: $50.00</p>
-    <p style="color:#75787b;">Your Balance: $0.00</p>
-    <form method="POST">
-      <input type="hidden" name="price" value="50">
-      <button type="submit">Buy Hoodie</button>
-    </form>
-    {feedback}
+  <div class="store-card">
+    <div class="badge">OFFICIAL HOKIE MERCHANDISE</div>
+    <div class="card-content">
+      <div class="item-icon">🧥</div>
+      <h2>VT Cyber Maroon Hoodie</h2>
+      <div class="price-tag">$50.00</div>
+      
+      <div class="wallet-box">
+        HOKIE WALLET BALANCE: <strong style="color:#ff6666;">$0.00</strong>
+      </div>
+
+      <form method="POST">
+        <!-- Target Parameter for Inspection -->
+        <input type="hidden" name="price" value="50">
+        <button type="submit">CHECKOUT / BUY ITEM</button>
+      </form>
+
+      {'<div class="alert">' + feedback + '</div>' if feedback else ''}
+    </div>
   </div>
 </body>
 </html>'''
@@ -442,7 +533,37 @@ def target_robots_file():
 
 @app.route('/restricted-drillfield-vault/')
 def target_drillfield_vault():
-    return "<body style='background:#0d0d0d;color:#E5751F;font-family:monospace;padding:40px;'><h1>Vault Opened</h1><p>Flag: HOKIE{robots_cannot_hide}</p></body>"
+    return '''<!DOCTYPE html>
+<html>
+<head>
+  <title>Restricted Drillfield Archive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      background:#080104; color:#00ff66; font-family:'Share Tech Mono', monospace;
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+    }
+    .vault-box {
+      max-width:520px; width:100%; border:1px solid #00ff66; background:rgba(0,255,102,0.03);
+      box-shadow:0 0 30px rgba(0,255,102,0.2); padding:32px; text-align:center;
+    }
+    h1 { font-family:'Orbitron', monospace; font-size:20px; margin-bottom:14px; letter-spacing:2px; }
+    p { color:#bbb; font-size:13px; line-height:1.6; margin-bottom:20px; }
+    .flag {
+      background:#111; border:1px dashed #00ff66; padding:12px;
+      font-size:16px; font-weight:bold; color:#fff; word-break:break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="vault-box">
+    <h1>// VAULT UNLOCKED</h1>
+    <p>Crawler Exclusion Protocol bypassed successfully.<br>Classified archive index accessed.</p>
+    <div class="flag">HOKIE{robots_cannot_hide}</div>
+  </div>
+</body>
+</html>'''
 
 @app.route('/challenge/header-ping')
 def target_header_ping():
