@@ -79,7 +79,7 @@ def init_db():
         ("Free Campus Gear",
          "The campus merchandise checkout page trusts client input. Inspect the page elements, tamper with the hidden form value, and purchase the hoodie for $0!<br><br><a href='/challenge/store' target='_blank' style='color:#E5751F;font-weight:bold;'>Open Campus Store →</a>",
          "Ethical Hacking", 75, "HOKIE{client_side_tampering}",
-         "Right-click the Buy button -> Inspect Element. Find <input type='hidden' name='price' value='50'> and modify value to '0'."),
+         "Right-click the Buy button -> Inspect Element. Find <input type='hidden' name='price' value='100'> and modify value to '0'."),
 
         ("The Secret Vault",
          "The web server has a crawler exclusion file. What path is restricted from web crawlers?<br><br><a href='/challenge/robots-site' target='_blank' style='color:#E5751F;font-weight:bold;'>Open Challenge Server →</a>",
@@ -444,7 +444,7 @@ def target_store():
     feedback = ""
     is_success = False
     if request.method == 'POST':
-        price = request.form.get('price', '50')
+        price = request.form.get('price', '100')
         if price == '0':
             is_success = True
             feedback = "TRANSACTION APPROVED ($0.00)<br>Order dispatched! Flag: <strong style='color:#00ff66;'>HOKIE{client_side_tampering}</strong>"
@@ -464,14 +464,36 @@ def target_store():
       display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
     }}
     .store-card {{
-      max-width:380px; width:100%; background:rgba(20,5,11,0.95);
+      max-width:390px; width:100%; background:rgba(20,5,11,0.95);
       border:1px solid #861F41; border-radius:6px; box-shadow:0 0 30px rgba(134,31,65,0.3);
       overflow:hidden; text-align:center;
     }}
     .badge {{ background:#861F41; color:#fff; font-size:11px; padding:6px; letter-spacing:1px; }}
     .card-content {{ padding:24px; }}
-    .item-icon {{ font-size:48px; margin-bottom:10px; }}
-    h2 {{ font-family:'Orbitron', monospace; font-size:18px; color:#fff; margin-bottom:8px; }}
+    
+    /* 3D Rotating Hoodie */
+    .hoodie-wrapper {{
+      perspective: 800px;
+      margin: 10px auto 16px auto;
+      width: 140px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }}
+    .rotating-hoodie {{
+      width: 130px;
+      height: auto;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8));
+      animation: spinY 6s linear infinite;
+      transform-style: preserve-3d;
+    }}
+    @keyframes spinY {{
+      0% {{ transform: rotateY(0deg); }}
+      100% {{ transform: rotateY(360deg); }}
+    }}
+
+    h2 {{ font-family:'Orbitron', monospace; font-size:17px; color:#fff; margin-bottom:8px; }}
     .price-tag {{ font-size:24px; color:#E5751F; font-weight:bold; margin-bottom:12px; }}
     .wallet-box {{
       background:rgba(0,0,0,0.5); padding:10px; border:1px dashed #555;
@@ -495,17 +517,19 @@ def target_store():
   <div class="store-card">
     <div class="badge">OFFICIAL HOKIE MERCHANDISE</div>
     <div class="card-content">
-      <div class="item-icon">🧥</div>
+      <div class="hoodie-wrapper">
+        <img class="rotating-hoodie" src="/static/images/vt_hoodie.png" alt="Virginia Tech Hoodie">
+      </div>
       <h2>VT Cyber Maroon Hoodie</h2>
-      <div class="price-tag">$50.00</div>
+      <div class="price-tag">$100.00</div>
       
       <div class="wallet-box">
         HOKIE WALLET BALANCE: <strong style="color:#ff6666;">$0.00</strong>
       </div>
 
       <form method="POST">
-        <!-- Target Parameter for Inspection -->
-        <input type="hidden" name="price" value="50">
+        <!-- Target Parameter for Inspection: change 100 to 0 -->
+        <input type="hidden" name="price" value="100">
         <button type="submit">CHECKOUT / BUY ITEM</button>
       </form>
 
@@ -519,48 +543,60 @@ def target_store():
 def target_robots():
     return '''<!DOCTYPE html>
 <html>
-<head><title>Hokie Central</title><style>body{background:#0d0d0d;color:#75787B;font-family:monospace;padding:40px;text-align:center;}</style></head>
-<body>
-  <h1 style="color:#861F41;">Hokie Web Hub</h1>
-  <p>Search engines index this site publically.</p>
-</body>
-</html>'''
-
-@app.route('/robots.txt')
-@app.route('/challenge/robots-site/robots.txt')
-def target_robots_file():
-    return "User-agent: *\nDisallow: /restricted-drillfield-vault/\n", 200, {'Content-Type': 'text/plain'}
-
-@app.route('/restricted-drillfield-vault/')
-def target_drillfield_vault():
-    return '''<!DOCTYPE html>
-<html>
 <head>
-  <title>Restricted Drillfield Archive</title>
+  <title>Hokie Central — Web Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing:border-box; margin:0; padding:0; }
     body {
-      background:#080104; color:#00ff66; font-family:'Share Tech Mono', monospace;
-      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+      background:#070204; color:#75787B; font-family:'Share Tech Mono', monospace;
+      min-height:100vh; overflow:hidden; position:relative;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
     }
-    .vault-box {
-      max-width:520px; width:100%; border:1px solid #00ff66; background:rgba(0,255,102,0.03);
-      box-shadow:0 0 30px rgba(0,255,102,0.2); padding:32px; text-align:center;
+    h1 { font-family:'Orbitron', monospace; color:#861F41; font-size:26px; margin-bottom:10px; }
+    p { color:#888; font-size:14px; }
+
+    /* Animated Walking Robots */
+    .robot-track {
+      position: absolute;
+      width: 100%;
+      height: 60px;
+      pointer-events: none;
     }
-    h1 { font-family:'Orbitron', monospace; font-size:20px; margin-bottom:14px; letter-spacing:2px; }
-    p { color:#bbb; font-size:13px; line-height:1.6; margin-bottom:20px; }
-    .flag {
-      background:#111; border:1px dashed #00ff66; padding:12px;
-      font-size:16px; font-weight:bold; color:#fff; word-break:break-all;
+    .track-top { top: 20%; }
+    .track-mid { bottom: 22%; }
+
+    .bot {
+      position: absolute;
+      font-size: 34px;
+      display: inline-block;
+      animation: walkAcross linear infinite;
+    }
+    .bot-1 { animation-duration: 9s; }
+    .bot-2 { animation-duration: 14s; animation-delay: 3s; font-size: 26px; }
+    .bot-3 { animation-duration: 11s; animation-delay: 6s; transform: scaleX(-1); animation-name: walkBack; }
+
+    @keyframes walkAcross {
+      0% { left: -60px; }
+      100% { left: 105vw; }
+    }
+    @keyframes walkBack {
+      0% { right: -60px; }
+      100% { right: 105vw; }
     }
   </style>
 </head>
 <body>
-  <div class="vault-box">
-    <h1>// VAULT UNLOCKED</h1>
-    <p>Crawler Exclusion Protocol bypassed successfully.<br>Classified archive index accessed.</p>
-    <div class="flag">HOKIE{robots_cannot_hide}</div>
+  <div class="robot-track track-top">
+    <div class="bot bot-1">🤖</div>
+    <div class="bot bot-2">🤖</div>
+  </div>
+
+  <h1>Hokie Web Hub</h1>
+  <p>Search engines index this site publicly.</p>
+
+  <div class="robot-track track-mid">
+    <div class="bot bot-3">🤖</div>
   </div>
 </body>
 </html>'''
