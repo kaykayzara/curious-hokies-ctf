@@ -563,62 +563,152 @@ def target_store():
 
 @app.route('/challenge/robots-site')
 def target_robots():
-    return '''<!DOCTYPE html>
+    # Reusable inline 3D-shaded Cyber Crawler Mech SVG
+    robot_svg = '''
+    <svg class="mech-svg" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Glow Drop Shadow -->
+      <ellipse cx="50" cy="85" rx="36" ry="5" fill="#E5751F" opacity="0.3" class="ground-shadow"/>
+      <!-- Mech Body / Chassis -->
+      <polygon points="20,40 32,22 68,22 80,40 72,66 28,66" fill="#1C1D24" stroke="#861F41" stroke-width="2.5"/>
+      <!-- Shaded Armor Facet Plates -->
+      <polygon points="32,22 68,22 60,38 40,38" fill="#2E303E"/>
+      <polygon points="20,40 40,38 28,66" fill="#14151B"/>
+      <polygon points="80,40 60,38 72,66" fill="#262833"/>
+      <!-- Core Reactor / Chest Vent -->
+      <rect x="42" y="44" width="16" height="14" rx="2" fill="#0A0B0E" stroke="#555" stroke-width="1.5"/>
+      <line x1="45" y1="48" x2="55" y2="48" stroke="#E5751F" stroke-width="1.5"/>
+      <line x1="45" y1="52" x2="55" y2="52" stroke="#E5751F" stroke-width="1.5"/>
+      <!-- Glowing Scanner Visor / Optical Eye -->
+      <rect x="30" y="27" width="40" height="7" rx="3.5" fill="#0A0B0E" stroke="#861F41" stroke-width="1"/>
+      <rect class="visor-laser" x="33" y="29" width="34" height="3" rx="1.5" fill="#E5751F"/>
+      <!-- Antenna / Scanner Array -->
+      <line x1="50" y1="22" x2="50" y2="10" stroke="#8E9094" stroke-width="2"/>
+      <circle class="antenna-beacon" cx="50" cy="8" r="3.5" fill="#FF3300"/>
+      <!-- Crawler Mech Legs -->
+      <!-- Left Legs -->
+      <path class="leg-l1" d="M22 52 L6 62 L4 80" stroke="#75787B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="leg-l2" d="M26 62 L14 74 L16 84" stroke="#505257" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Right Legs -->
+      <path class="leg-r1" d="M78 52 L94 62 L96 80" stroke="#75787B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path class="leg-r2" d="M74 62 L86 74 L84 84" stroke="#505257" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    '''
+
+    return f'''<!DOCTYPE html>
 <html>
 <head>
   <title>Hokie Central — Web Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body {
-      background:#070204; color:#75787B; font-family:'Share Tech Mono', monospace;
+    * {{ box-sizing:border-box; margin:0; padding:0; }}
+    body {{
+      background: radial-gradient(circle at 50% 40%, #1A030A 0%, #070103 100%);
+      color: #8E9094; font-family:'Share Tech Mono', monospace;
       min-height:100vh; overflow:hidden; position:relative;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-    }
-    h1 { font-family:'Orbitron', monospace; color:#861F41; font-size:26px; margin-bottom:10px; }
-    p { color:#888; font-size:14px; }
+    }}
 
-    /* Animated Walking Robots */
-    .robot-track {
-      position: absolute;
-      width: 100%;
-      height: 60px;
+    /* Radar / Network Grid Background Overlay */
+    .radar-grid {{
+      position: absolute; inset:0;
+      background-image: 
+        linear-gradient(rgba(134,31,65,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(134,31,65,0.08) 1px, transparent 1px);
+      background-size: 50px 50px;
       pointer-events: none;
-    }
-    .track-top { top: 20%; }
-    .track-mid { bottom: 22%; }
+    }}
 
-    .bot {
+    .hub-content {{
+      position: relative; z-index: 10; text-align: center;
+      padding: 30px 40px; background: rgba(14, 2, 6, 0.85);
+      border: 1px solid rgba(134,31,65,0.6); border-radius: 6px;
+      box-shadow: 0 0 40px rgba(134,31,65,0.3);
+    }}
+    h1 {{ font-family:'Orbitron', monospace; color:#D13867; font-size:28px; letter-spacing:2px; margin-bottom:8px; }}
+    p {{ color:#aaa; font-size:14px; letter-spacing:1px; }}
+
+    /* Crawler Mech Lanes */
+    .crawler-lane {{
+      position: absolute; width:100%; height:110px; pointer-events: none;
+    }}
+    .lane-top {{ top: 12%; }}
+    .lane-mid {{ top: 48%; opacity: 0.35; filter: blur(0.5px) scale(0.65); z-index: 2; }}
+    .lane-bot {{ bottom: 12%; }}
+
+    .mech-unit {{
       position: absolute;
-      font-size: 34px;
-      display: inline-block;
-      animation: walkAcross linear infinite;
-    }
-    .bot-1 { animation-duration: 9s; }
-    .bot-2 { animation-duration: 14s; animation-delay: 3s; font-size: 26px; }
-    .bot-3 { animation-duration: 11s; animation-delay: 6s; transform: scaleX(-1); animation-name: walkBack; }
+      width: 110px;
+      height: 100px;
+      animation: marchAcross linear infinite;
+    }}
+    .mech-svg {{
+      width: 100%; height: 100%;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.8));
+    }}
 
-    @keyframes walkAcross {
-      0% { left: -60px; }
-      100% { left: 105vw; }
-    }
-    @keyframes walkBack {
-      0% { right: -60px; }
-      100% { right: 105vw; }
-    }
+    /* Marching & Walking Mechanics */
+    .mech-fast {{ animation-duration: 10s; }}
+    .mech-med  {{ animation-duration: 14s; animation-delay: 4s; }}
+    .mech-rev  {{
+      animation-duration: 12s;
+      animation-name: marchReverse;
+      transform: scaleX(-1);
+    }}
+
+    /* Leg Animation & Beacon Pulsing */
+    .antenna-beacon {{
+      animation: pulseLight 0.8s infinite alternate;
+    }}
+    .visor-laser {{
+      animation: laserSweep 1.5s infinite alternate;
+    }}
+
+    @keyframes pulseLight {{
+      from {{ fill: #FF1A00; filter: drop-shadow(0 0 2px #FF1A00); }}
+      to   {{ fill: #00FF66; filter: drop-shadow(0 0 8px #00FF66); }}
+    }}
+    @keyframes laserSweep {{
+      from {{ fill: #E5751F; opacity: 0.7; }}
+      to   {{ fill: #FF0055; opacity: 1; filter: drop-shadow(0 0 6px #FF0055); }}
+    }}
+
+    @keyframes marchAcross {{
+      0%   {{ left: -140px; transform: translateY(0px); }}
+      25%  {{ transform: translateY(-4px); }}
+      50%  {{ transform: translateY(0px); }}
+      75%  {{ transform: translateY(-4px); }}
+      100% {{ left: 105vw; transform: translateY(0px); }}
+    }}
+    @keyframes marchReverse {{
+      0%   {{ right: -140px; transform: scaleX(-1) translateY(0px); }}
+      25%  {{ transform: scaleX(-1) translateY(-4px); }}
+      50%  {{ transform: scaleX(-1) translateY(0px); }}
+      75%  {{ transform: scaleX(-1) translateY(-4px); }}
+      100% {{ right: 105vw; transform: scaleX(-1) translateY(0px); }}
+    }}
   </style>
 </head>
 <body>
-  <div class="robot-track track-top">
-    <div class="bot bot-1">🤖</div>
-    <div class="bot bot-2">🤖</div>
+  <div class="radar-grid"></div>
+
+  <!-- Upper Patrol Track -->
+  <div class="crawler-lane lane-top">
+    <div class="mech-unit mech-fast">{robot_svg}</div>
   </div>
 
-  <h1>Hokie Web Hub</h1>
-  <p>Search engines index this site publicly.</p>
+  <!-- Distant Background Patrol Track -->
+  <div class="crawler-lane lane-mid">
+    <div class="mech-unit mech-rev" style="animation-duration: 18s;">{robot_svg}</div>
+  </div>
 
-  <div class="robot-track track-mid">
-    <div class="bot bot-3">🤖</div>
+  <div class="hub-content">
+    <h1>// HOKIE WEB HUB</h1>
+    <p>Search engine crawlers index this portal publicly.</p>
+  </div>
+
+  <!-- Lower Patrol Track (Reverse Direction) -->
+  <div class="crawler-lane lane-bot">
+    <div class="mech-unit mech-med mech-rev">{robot_svg}</div>
   </div>
 </body>
 </html>'''
