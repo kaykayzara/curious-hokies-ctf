@@ -28,6 +28,7 @@ def init_db():
     )''')
     c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('start_time', '0')")
     c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('duration_seconds', '1800')") # 30 mins = 1800s
+    c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('remaining_seconds', '1800')")
     c.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('is_active', '0')")
 
     c.execute('''CREATE TABLE IF NOT EXISTS users (
@@ -193,12 +194,16 @@ def get_timer():
     is_active = rows.get('is_active') == '1'
     start_time = float(rows.get('start_time', 0))
     duration = int(rows.get('duration_seconds', 1800))
+    remaining_saved = int(rows.get('remaining_seconds', duration))
     
-    if not is_active or start_time == 0:
+    if start_time == 0:
         return jsonify({'status': 'waiting', 'remaining': duration, 'active': False})
     
+    if not is_active:
+        return jsonify({'status': 'paused', 'remaining': remaining_saved, 'active': False})
+    
     elapsed = time.time() - start_time
-    remaining = max(0, int(duration - elapsed))
+    remaining = max(0, int(remaining_saved - elapsed))
     
     if remaining <= 0:
         return jsonify({'status': 'ended', 'remaining': 0, 'active': False})
@@ -211,16 +216,27 @@ def admin_timer_control():
         return jsonify({'error': 'Unauthorized'}), 401
     action = (request.json or {}).get('action')
     conn = get_db()
+    rows = dict(conn.execute("SELECT key, value FROM config").fetchall())
+    duration = int(rows.get('duration_seconds', 1800))
     
     if action == 'start':
         conn.execute("UPDATE config SET value=? WHERE key='start_time'", (str(time.time()),))
         conn.execute("UPDATE config SET value='1' WHERE key='is_active'")
     elif action == 'pause':
+        start_time = float(rows.get('start_time', 0))
+        remaining_saved = int(rows.get('remaining_seconds', duration))
+        if start_time > 0 and rows.get('is_active') == '1':
+            elapsed = time.time() - start_time
+            new_remaining = max(0, int(remaining_saved - elapsed))
+        else:
+            new_remaining = remaining_saved
+        conn.execute("INSERT OR REPLACE INTO config (key, value) VALUES ('remaining_seconds', ?)", (str(new_remaining),))
         conn.execute("UPDATE config SET value='0' WHERE key='is_active'")
     elif action == 'reset':
         conn.execute("UPDATE config SET value='0' WHERE key='start_time'")
         conn.execute("UPDATE config SET value='0' WHERE key='is_active'")
-        conn.execute("UPDATE config SET value='1800' WHERE key='duration_seconds'")
+        conn.execute("INSERT OR REPLACE INTO config (key, value) VALUES ('duration_seconds', '1800')")
+        conn.execute("INSERT OR REPLACE INTO config (key, value) VALUES ('remaining_seconds', '1800')")
           
     conn.commit()
     conn.close()
