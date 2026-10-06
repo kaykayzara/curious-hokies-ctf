@@ -464,37 +464,38 @@ def target_store():
       display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
     }}
     .store-card {{
-      max-width:390px; width:100%; background:rgba(20,5,11,0.95);
-      border:1px solid #861F41; border-radius:6px; box-shadow:0 0 30px rgba(134,31,65,0.3);
+      max-width:400px; width:100%; background:rgba(20,5,11,0.95);
+      border:1px solid #861F41; border-radius:8px; box-shadow:0 0 35px rgba(134,31,65,0.4);
       overflow:hidden; text-align:center;
     }}
-    .badge {{ background:#861F41; color:#fff; font-size:11px; padding:6px; letter-spacing:1px; }}
+    .badge {{ background:#861F41; color:#fff; font-size:11px; padding:8px; letter-spacing:1.5px; font-weight:bold; }}
     .card-content {{ padding:24px; }}
-    
-    /* 3D Rotating Hoodie */
-    .hoodie-wrapper {{
-      perspective: 800px;
-      margin: 10px auto 16px auto;
-      width: 140px;
-      height: 160px;
+
+    /* Holographic 3D Spinning Hoodie Showcase */
+    .showcase-stage {{
+      perspective: 900px;
+      width: 100%;
+      height: 180px;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 12px;
     }}
-    .rotating-hoodie {{
-      width: 130px;
-      height: auto;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8));
-      animation: spinY 6s linear infinite;
+    .hoodie-hologram {{
+      width: 140px;
+      height: 160px;
+      animation: holoSpin 7s ease-in-out infinite alternate;
       transform-style: preserve-3d;
+      filter: drop-shadow(0 10px 20px rgba(134,31,65,0.6));
     }}
-    @keyframes spinY {{
-      0% {{ transform: rotateY(0deg); }}
-      100% {{ transform: rotateY(360deg); }}
+    @keyframes holoSpin {{
+      0%   {{ transform: rotateY(-32deg) rotateX(8deg); }}
+      50%  {{ transform: rotateY(0deg) translateY(-8px); }}
+      100% {{ transform: rotateY(32deg) rotateX(-8deg); }}
     }}
 
-    h2 {{ font-family:'Orbitron', monospace; font-size:17px; color:#fff; margin-bottom:8px; }}
-    .price-tag {{ font-size:24px; color:#E5751F; font-weight:bold; margin-bottom:12px; }}
+    h2 {{ font-family:'Orbitron', monospace; font-size:18px; color:#fff; margin-bottom:6px; }}
+    .price-tag {{ font-size:26px; color:#E5751F; font-weight:bold; margin-bottom:12px; }}
     .wallet-box {{
       background:rgba(0,0,0,0.5); padding:10px; border:1px dashed #555;
       font-size:12px; color:#aaa; margin-bottom:18px;
@@ -504,7 +505,7 @@ def target_store():
       font-size:12px; font-weight:bold; padding:12px; border:none; cursor:pointer;
       transition:0.2s;
     }}
-    button:hover {{ background:#ff8c37; box-shadow:0 0 12px rgba(229,117,31,0.4); }}
+    button:hover {{ background:#ff8c37; box-shadow:0 0 14px rgba(229,117,31,0.5); }}
     .alert {{
       margin-top:16px; padding:12px; font-size:12px; line-height:1.5;
       background: {'rgba(0,255,102,0.1)' if is_success else 'rgba(255,68,68,0.1)'};
@@ -517,9 +518,30 @@ def target_store():
   <div class="store-card">
     <div class="badge">OFFICIAL HOKIE MERCHANDISE</div>
     <div class="card-content">
-      <div class="hoodie-wrapper">
-        <img class="rotating-hoodie" src="/static/images/vt_hoodie.png" alt="Virginia Tech Hoodie">
+      
+      <!-- Embedded Cyber VT Hoodie Vector -->
+      <div class="showcase-stage">
+        <svg class="hoodie-hologram" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer Shadow / Glow Base -->
+          <ellipse cx="100" cy="205" rx="55" ry="10" fill="#000" opacity="0.4"/>
+          <!-- Hoodie Torso -->
+          <path d="M50 70 L30 170 L65 175 L70 200 L130 200 L135 175 L170 170 L150 70 L125 50 L75 50 Z" fill="#6B132F" stroke="#861F41" stroke-width="3"/>
+          <!-- Arms / Sleeves -->
+          <path d="M50 70 L10 135 L30 148 L55 95 Z" fill="#500E23"/>
+          <path d="M150 70 L190 135 L170 148 L145 95 Z" fill="#500E23"/>
+          <!-- Hood Collar & Interior -->
+          <path d="M75 50 Q100 20 125 50 Q100 75 75 50 Z" fill="#3D0A1B" stroke="#861F41" stroke-width="2"/>
+          <!-- Drawstrings -->
+          <path d="M90 62 L88 105" stroke="#E5751F" stroke-width="3" stroke-linecap="round"/>
+          <path d="M110 62 L112 105" stroke="#E5751F" stroke-width="3" stroke-linecap="round"/>
+          <!-- Kangaroo Pocket -->
+          <path d="M75 140 L125 140 L130 175 L70 175 Z" fill="#5A1027" stroke="#861F41" stroke-width="2"/>
+          <!-- VT Center Crest -->
+          <text x="100" y="112" font-family="'Orbitron', sans-serif" font-weight="900" font-size="20" fill="#E5751F" text-anchor="middle" letter-spacing="1">VT</text>
+          <text x="100" y="125" font-family="'Share Tech Mono', monospace" font-weight="bold" font-size="8" fill="#FFF" text-anchor="middle" letter-spacing="2">HOKIES</text>
+        </svg>
       </div>
+
       <h2>VT Cyber Maroon Hoodie</h2>
       <div class="price-tag">$100.00</div>
       
@@ -528,7 +550,7 @@ def target_store():
       </div>
 
       <form method="POST">
-        <!-- Target Parameter for Inspection: change 100 to 0 -->
+        <!-- Target Parameter for Inspection: Change 100 to 0 -->
         <input type="hidden" name="price" value="100">
         <button type="submit">CHECKOUT / BUY ITEM</button>
       </form>
