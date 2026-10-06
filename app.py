@@ -93,9 +93,9 @@ def init_db():
          "Paste the code into <a href='https://www.online-python.com/' target='_blank' style='color:#E5751F;font-weight:bold;'>Online Python Compiler</a>. Remember: Python stores variables in memory silently—add a print statement to display the result on screen!"),
 
         ("Logic Gate Circuit",
-         "A security lock evaluates 4 binary values (A, B, C, D where 1=True, 0=False). When the lock triggers <code>(A and not B) and (C or not D)</code>, the gate unlock code is <strong>logic_gate_active</strong>.<br><br>Submit the flag in standard format: <code>HOKIE{logic_gate_active}</code>",
-         "Computer Science", 75, "HOKIE{logic_gate_active}",
-         "The flag is plain text inside braces: HOKIE{logic_gate_active}."),
+         "An access lock opens when the circuit evaluates to <strong>True</strong>:<br><br><code style='background:#111;padding:8px 12px;border-left:3px solid #E5751F;display:block;color:#eee;'>(A and not B) and (C or not D)</code><br>Determine the binary values (1=True, 0=False). For (C or not D), assume both inputs are in optimal active state (C=1, D=0).<br><br>Map each input to its keyword to form the 4-word flag:<br>• <strong>A:</strong> 1 = alpha, 0 = amber<br>• <strong>B:</strong> 1 = bravo, 0 = burnt<br>• <strong>C:</strong> 1 = chicago, 0 = copper<br>• <strong>D:</strong> 1 = delta, 0 = drillfield",
+         "Computer Science", 75, "HOKIE{alpha_burnt_chicago_drillfield}",
+         "For (A and not B) to be True, A must be 1 and B must be 0 (so that not B becomes 1). For (C or not D), C is 1 and D is 0. Combine the 4 matching words in order!"),
 
         # Cybersecurity
         ("Burnt Orange Hex",
