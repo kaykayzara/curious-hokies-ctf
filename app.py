@@ -90,7 +90,7 @@ def init_db():
         ("AP Loop Trace",
          "Trace the output of this Python slicing snippet:<br><br><pre style='background:#111;padding:10px;border-left:3px solid #861F41;color:#eee;'>word = 'H1o0k2i4e6_8C!y@b#e$r%'\nflag = word[::2]\n# format: HOKIE{result}</pre>",
          "Computer Science", 50, "HOKIE{hokie_cyber}",
-         "String slicing [::2] takes every second character starting at index 0. The output is 'Hokie_Cyber' (submit as HOKIE{hokie_cyber})."),
+         "Paste the code into <a href='https://www.online-python.com/' target='_blank' style='color:#E5751F;font-weight:bold;'>Online Python Compiler</a>. Remember: Python stores variables in memory silently—add a print statement to display the result on screen!"),
 
         ("Logic Gate Circuit",
          "A security lock evaluates 4 binary values (A, B, C, D where 1=True, 0=False). When the lock triggers <code>(A and not B) and (C or not D)</code>, the gate unlock code is <strong>logic_gate_active</strong>.<br><br>Submit the flag in standard format: <code>HOKIE{logic_gate_active}</code>",
