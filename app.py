@@ -522,21 +522,14 @@ def target_store():
       <!-- Embedded Cyber VT Hoodie Vector -->
       <div class="showcase-stage">
         <svg class="hoodie-hologram" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Outer Shadow / Glow Base -->
           <ellipse cx="100" cy="205" rx="55" ry="10" fill="#000" opacity="0.4"/>
-          <!-- Hoodie Torso -->
           <path d="M50 70 L30 170 L65 175 L70 200 L130 200 L135 175 L170 170 L150 70 L125 50 L75 50 Z" fill="#6B132F" stroke="#861F41" stroke-width="3"/>
-          <!-- Arms / Sleeves -->
           <path d="M50 70 L10 135 L30 148 L55 95 Z" fill="#500E23"/>
           <path d="M150 70 L190 135 L170 148 L145 95 Z" fill="#500E23"/>
-          <!-- Hood Collar & Interior -->
           <path d="M75 50 Q100 20 125 50 Q100 75 75 50 Z" fill="#3D0A1B" stroke="#861F41" stroke-width="2"/>
-          <!-- Drawstrings -->
           <path d="M90 62 L88 105" stroke="#E5751F" stroke-width="3" stroke-linecap="round"/>
           <path d="M110 62 L112 105" stroke="#E5751F" stroke-width="3" stroke-linecap="round"/>
-          <!-- Kangaroo Pocket -->
           <path d="M75 140 L125 140 L130 175 L70 175 Z" fill="#5A1027" stroke="#861F41" stroke-width="2"/>
-          <!-- VT Center Crest -->
           <text x="100" y="112" font-family="'Orbitron', sans-serif" font-weight="900" font-size="20" fill="#E5751F" text-anchor="middle" letter-spacing="1">VT</text>
           <text x="100" y="125" font-family="'Share Tech Mono', monospace" font-weight="bold" font-size="8" fill="#FFF" text-anchor="middle" letter-spacing="2">HOKIES</text>
         </svg>
@@ -561,34 +554,26 @@ def target_store():
 </body>
 </html>'''
 
+# ── FLEXIBLE ROBOTS TARGET & VAULT ROUTES ────────────────────
 @app.route('/challenge/robots-site')
+@app.route('/challenge/robots-site/')
 def target_robots():
-    # Reusable inline 3D-shaded Cyber Crawler Mech SVG
     robot_svg = '''
     <svg class="mech-svg" viewBox="0 0 100 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Glow Drop Shadow -->
       <ellipse cx="50" cy="85" rx="36" ry="5" fill="#E5751F" opacity="0.3" class="ground-shadow"/>
-      <!-- Mech Body / Chassis -->
       <polygon points="20,40 32,22 68,22 80,40 72,66 28,66" fill="#1C1D24" stroke="#861F41" stroke-width="2.5"/>
-      <!-- Shaded Armor Facet Plates -->
       <polygon points="32,22 68,22 60,38 40,38" fill="#2E303E"/>
       <polygon points="20,40 40,38 28,66" fill="#14151B"/>
       <polygon points="80,40 60,38 72,66" fill="#262833"/>
-      <!-- Core Reactor / Chest Vent -->
       <rect x="42" y="44" width="16" height="14" rx="2" fill="#0A0B0E" stroke="#555" stroke-width="1.5"/>
       <line x1="45" y1="48" x2="55" y2="48" stroke="#E5751F" stroke-width="1.5"/>
       <line x1="45" y1="52" x2="55" y2="52" stroke="#E5751F" stroke-width="1.5"/>
-      <!-- Glowing Scanner Visor / Optical Eye -->
       <rect x="30" y="27" width="40" height="7" rx="3.5" fill="#0A0B0E" stroke="#861F41" stroke-width="1"/>
       <rect class="visor-laser" x="33" y="29" width="34" height="3" rx="1.5" fill="#E5751F"/>
-      <!-- Antenna / Scanner Array -->
       <line x1="50" y1="22" x2="50" y2="10" stroke="#8E9094" stroke-width="2"/>
       <circle class="antenna-beacon" cx="50" cy="8" r="3.5" fill="#FF3300"/>
-      <!-- Crawler Mech Legs -->
-      <!-- Left Legs -->
       <path class="leg-l1" d="M22 52 L6 62 L4 80" stroke="#75787B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       <path class="leg-l2" d="M26 62 L14 74 L16 84" stroke="#505257" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <!-- Right Legs -->
       <path class="leg-r1" d="M78 52 L94 62 L96 80" stroke="#75787B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       <path class="leg-r2" d="M74 62 L86 74 L84 84" stroke="#505257" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -607,8 +592,6 @@ def target_robots():
       min-height:100vh; overflow:hidden; position:relative;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
     }}
-
-    /* Radar / Network Grid Background Overlay */
     .radar-grid {{
       position: absolute; inset:0;
       background-image: 
@@ -617,7 +600,6 @@ def target_robots():
       background-size: 50px 50px;
       pointer-events: none;
     }}
-
     .hub-content {{
       position: relative; z-index: 10; text-align: center;
       padding: 30px 40px; background: rgba(14, 2, 6, 0.85);
@@ -627,41 +609,19 @@ def target_robots():
     h1 {{ font-family:'Orbitron', monospace; color:#D13867; font-size:28px; letter-spacing:2px; margin-bottom:8px; }}
     p {{ color:#aaa; font-size:14px; letter-spacing:1px; }}
 
-    /* Crawler Mech Lanes */
-    .crawler-lane {{
-      position: absolute; width:100%; height:110px; pointer-events: none;
-    }}
+    .crawler-lane {{ position: absolute; width:100%; height:110px; pointer-events: none; }}
     .lane-top {{ top: 12%; }}
     .lane-mid {{ top: 48%; opacity: 0.35; filter: blur(0.5px) scale(0.65); z-index: 2; }}
     .lane-bot {{ bottom: 12%; }}
 
-    .mech-unit {{
-      position: absolute;
-      width: 110px;
-      height: 100px;
-      animation: marchAcross linear infinite;
-    }}
-    .mech-svg {{
-      width: 100%; height: 100%;
-      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.8));
-    }}
-
-    /* Marching & Walking Mechanics */
+    .mech-unit {{ position: absolute; width: 110px; height: 100px; animation: marchAcross linear infinite; }}
+    .mech-svg {{ width: 100%; height: 100%; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.8)); }}
     .mech-fast {{ animation-duration: 10s; }}
     .mech-med  {{ animation-duration: 14s; animation-delay: 4s; }}
-    .mech-rev  {{
-      animation-duration: 12s;
-      animation-name: marchReverse;
-      transform: scaleX(-1);
-    }}
+    .mech-rev  {{ animation-duration: 12s; animation-name: marchReverse; transform: scaleX(-1); }}
 
-    /* Leg Animation & Beacon Pulsing */
-    .antenna-beacon {{
-      animation: pulseLight 0.8s infinite alternate;
-    }}
-    .visor-laser {{
-      animation: laserSweep 1.5s infinite alternate;
-    }}
+    .antenna-beacon {{ animation: pulseLight 0.8s infinite alternate; }}
+    .visor-laser {{ animation: laserSweep 1.5s infinite alternate; }}
 
     @keyframes pulseLight {{
       from {{ fill: #FF1A00; filter: drop-shadow(0 0 2px #FF1A00); }}
@@ -671,7 +631,6 @@ def target_robots():
       from {{ fill: #E5751F; opacity: 0.7; }}
       to   {{ fill: #FF0055; opacity: 1; filter: drop-shadow(0 0 6px #FF0055); }}
     }}
-
     @keyframes marchAcross {{
       0%   {{ left: -140px; transform: translateY(0px); }}
       25%  {{ transform: translateY(-4px); }}
@@ -690,25 +649,68 @@ def target_robots():
 </head>
 <body>
   <div class="radar-grid"></div>
-
-  <!-- Upper Patrol Track -->
   <div class="crawler-lane lane-top">
     <div class="mech-unit mech-fast">{robot_svg}</div>
   </div>
-
-  <!-- Distant Background Patrol Track -->
   <div class="crawler-lane lane-mid">
     <div class="mech-unit mech-rev" style="animation-duration: 18s;">{robot_svg}</div>
   </div>
-
   <div class="hub-content">
     <h1>// HOKIE WEB HUB</h1>
     <p>Search engine crawlers index this portal publicly.</p>
   </div>
-
-  <!-- Lower Patrol Track (Reverse Direction) -->
   <div class="crawler-lane lane-bot">
     <div class="mech-unit mech-med mech-rev">{robot_svg}</div>
+  </div>
+</body>
+</html>'''
+
+@app.route('/robots.txt')
+@app.route('/challenge/robots-site/robots.txt')
+@app.route('/challenge/robots.txt')
+def target_robots_file():
+    return "User-agent: *\nDisallow: /restricted-drillfield-vault/\n", 200, {'Content-Type': 'text/plain'}
+
+# Comprehensive aliases so students can append without 404 errors
+@app.route('/restricted-drillfield-vault/')
+@app.route('/restricted-drillfield-vault')
+@app.route('/challenge/robots-site/restricted-drillfield-vault/')
+@app.route('/challenge/robots-site/restricted-drillfield-vault')
+@app.route('/challenge/restricted-drillfield-vault/')
+@app.route('/challenge/restricted-drillfield-vault')
+@app.route('/robots.txt/restricted-drillfield-vault/')
+@app.route('/robots.txt/restricted-drillfield-vault')
+@app.route('/challenge/robots-site/robots.txt/restricted-drillfield-vault/')
+@app.route('/challenge/robots-site/robots.txt/restricted-drillfield-vault')
+def target_drillfield_vault():
+    return '''<!DOCTYPE html>
+<html>
+<head>
+  <title>Restricted Drillfield Archive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      background:#080104; color:#00ff66; font-family:'Share Tech Mono', monospace;
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+    }
+    .vault-box {
+      max-width:520px; width:100%; border:1px solid #00ff66; background:rgba(0,255,102,0.03);
+      box-shadow:0 0 30px rgba(0,255,102,0.2); padding:32px; text-align:center;
+    }
+    h1 { font-family:'Orbitron', monospace; font-size:20px; margin-bottom:14px; letter-spacing:2px; }
+    p { color:#bbb; font-size:13px; line-height:1.6; margin-bottom:20px; }
+    .flag {
+      background:#111; border:1px dashed #00ff66; padding:12px;
+      font-size:16px; font-weight:bold; color:#fff; word-break:break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="vault-box">
+    <h1>// VAULT UNLOCKED</h1>
+    <p>Crawler Exclusion Protocol bypassed successfully.<br>Classified archive index accessed.</p>
+    <div class="flag">HOKIE{robots_cannot_hide}</div>
   </div>
 </body>
 </html>'''
